@@ -12,7 +12,8 @@ const normalizeBaseUrl = (baseUrl) => {
     : `${trimmedBaseUrl}${API_PREFIX}`
 }
 
-const BASE_URL = normalizeBaseUrl(process.env.REACT_APP_BASE_URL)
+export const API_BASE_URL = normalizeBaseUrl(process.env.REACT_APP_BASE_URL)
+const BASE_URL = API_BASE_URL
 
 // AUTH ENDPOINTS
 export const endpoints = {

@@ -100,7 +100,7 @@ Expected local ports:
 | `MAIL_PASS` | Yes | `your_gmail_app_password` |
 | `MAIL_TEST_TO` | Optional | `your_test_recipient@gmail.com` |
 | `FRONTEND_URL` | Yes | `http://localhost:3000` |
-| `CORS_ORIGIN` | Yes | `http://localhost:3000,https://your-frontend.vercel.app` |
+| `CORS_ORIGIN` | Yes | `http://localhost:3000,https://your-project.vercel.app,https://your-project-*.vercel.app` |
 
 ### Frontend (`.env`)
 
@@ -129,7 +129,7 @@ Expected local ports:
 4. Build Command: `npm install`
 5. Start Command: `npm start`
 6. Add all backend environment variables from `server/.env.example`.
-7. Set `CORS_ORIGIN` as a comma-separated list (for example: `http://localhost:3000,https://your-frontend.vercel.app`).
+7. Set `CORS_ORIGIN` as a comma-separated list (for example: `http://localhost:3000,https://your-project.vercel.app,https://your-project-*.vercel.app`).
 8. Deploy and verify `https://your-backend.onrender.com/` responds.
 
 ### Frontend on Vercel

@@ -23,8 +23,10 @@ const { validateRazorpayConfiguration } = require("./config/razorpay");
 const fileUpload = require("express-fileupload");
 const PORT = process.env.PORT || 4000;
 const DEFAULT_CORS_ORIGINS = ["http://localhost:3000"];
+const DEFAULT_CORS_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"];
+const DEFAULT_CORS_HEADERS = ["Content-Type", "Authorization"];
 
-const getAllowedOrigins = () => {
+const getConfiguredOrigins = () => {
 	const parsedOrigins = (process.env.CORS_ORIGIN || "")
 		.split(",")
 		.map((origin) => origin.trim().replace(/\/+$/, ""))
@@ -33,7 +35,22 @@ const getAllowedOrigins = () => {
 	return parsedOrigins.length ? parsedOrigins : DEFAULT_CORS_ORIGINS;
 };
 
-const allowedOrigins = getAllowedOrigins();
+const escapeForRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const buildOriginMatcher = (configuredOrigin) => {
+	if (configuredOrigin.includes("*")) {
+		const pattern = configuredOrigin
+			.split("*")
+			.map((segment) => escapeForRegex(segment))
+			.join(".*");
+		const matcherRegex = new RegExp(`^${pattern}$`);
+		return (requestOrigin) => matcherRegex.test(requestOrigin);
+	}
+
+	return (requestOrigin) => requestOrigin === configuredOrigin;
+};
+
+const configuredOrigins = getConfiguredOrigins();
+const allowedOriginMatchers = configuredOrigins.map((origin) => buildOriginMatcher(origin));
 const corsOptions = {
 	origin: (origin, callback) => {
 		if (!origin) {
@@ -41,13 +58,18 @@ const corsOptions = {
 		}
 
 		const normalizedOrigin = origin.replace(/\/+$/, "");
-		if (allowedOrigins.includes(normalizedOrigin)) {
+		const isAllowed = allowedOriginMatchers.some((matcher) => matcher(normalizedOrigin));
+		if (isAllowed) {
 			return callback(null, true);
 		}
 
+		console.warn(`Blocked CORS origin: ${normalizedOrigin}`);
 		return callback(new Error("Not allowed by CORS"));
 	},
 	credentials: true,
+	methods: DEFAULT_CORS_METHODS,
+	allowedHeaders: DEFAULT_CORS_HEADERS,
+	optionsSuccessStatus: 204,
 };
 
 validateMailConfiguration();
@@ -68,6 +90,7 @@ database.connect()
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 
 app.use(
 	fileUpload({
