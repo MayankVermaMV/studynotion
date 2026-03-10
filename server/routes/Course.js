@@ -39,10 +39,10 @@ const {
 
 // Rating Controllers Import
 const {
-  createRating,
-  getAverageRating,
-  getAllRating,
-} = require("../controllers/RatingAndReview")
+  createOrUpdateCourseReview,
+  getCourseAverageRating,
+  getPublicReviews,
+} = require("../features/reviews/review.controller")
 
 const {
   updateCourseProgress
@@ -80,7 +80,7 @@ router.post("/editCourse", auth, isInstructor, editCourse)
 // Get all Courses Under a Specific Instructor
 router.get("/getInstructorCourses", auth, isInstructor, getInstructorCourses)
 // Delete a Course
-router.delete("/deleteCourse", deleteCourse)
+router.delete("/deleteCourse", auth, isInstructor, deleteCourse)
 
 router.post("/updateCourseProgress", auth, isStudent, updateCourseProgress);
 
@@ -96,8 +96,8 @@ router.post("/getCategoryPageDetails", categoryPageDetails)
 // ********************************************************************************************************
 //                                      Rating and Review
 // ********************************************************************************************************
-router.post("/createRating", auth, isStudent, createRating)
-router.get("/getAverageRating", getAverageRating)
-router.get("/getReviews", getAllRating)
+router.post("/createRating", auth, isStudent, createOrUpdateCourseReview)
+router.get("/getAverageRating", getCourseAverageRating)
+router.get("/getReviews", getPublicReviews)
 
 module.exports = router

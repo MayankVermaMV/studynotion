@@ -10,6 +10,7 @@ import Footer from "../components/common/Footer"
 import RatingStars from "../components/common/RatingStars"
 import CourseAccordionBar from "../components/core/Course/CourseAccordionBar"
 import CourseDetailsCard from "../components/core/Course/CourseDetailsCard"
+import CourseReviewsSection from "../components/core/Course/CourseReviewsSection"
 import { formatDate } from "../services/formatDate"
 import { fetchCourseDetails } from "../services/operations/courseDetailsAPI"
 import { buyCourse } from "../services/operations/studentFeaturesAPI"
@@ -39,7 +40,6 @@ function CourseDetails() {
         // console.log("course details res: ", res)
         setResponse(res)
       } catch (error) {
-        console.log("Could not fetch Course Details")
       }
     })()
   }, [courseId])
@@ -62,7 +62,7 @@ function CourseDetails() {
     setIsActive(
       !isActive.includes(id)
         ? isActive.concat([id])
-        : isActive.filter((e) => e != id)
+        : isActive.filter((e) => e !== id)
     )
   }
 
@@ -88,7 +88,6 @@ function CourseDetails() {
   }
 
   const {
-    _id: course_id,
     courseName,
     courseDescription,
     thumbnail,
@@ -256,6 +255,8 @@ function CourseDetails() {
                 {instructor?.additionalDetails?.about}
               </p>
             </div>
+
+            <CourseReviewsSection courseId={courseId} />
           </div>
         </div>
       </div>

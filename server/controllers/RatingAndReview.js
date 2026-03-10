@@ -41,14 +41,13 @@ exports.createRating = async (req, res) => {
                                     });
        
         //update course with this rating/review
-        const updatedCourseDetails = await Course.findByIdAndUpdate({_id:courseId},
+        await Course.findByIdAndUpdate({_id:courseId},
                                     {
                                         $push: {
                                             ratingAndReviews: ratingReview._id,
                                         }
                                     },
                                     {new: true});
-        console.log(updatedCourseDetails);
         //return response
         return res.status(200).json({
             success:true,
@@ -57,7 +56,7 @@ exports.createRating = async (req, res) => {
         })
     }
     catch(error) {
-        console.log(error);
+        console.error(error);
         return res.status(500).json({
             success:false,
             message:error.message,
@@ -106,7 +105,7 @@ exports.getAverageRating = async (req, res) => {
             })
     }
     catch(error) {
-        console.log(error);
+        console.error(error);
         return res.status(500).json({
             success:false,
             message:error.message,
@@ -137,7 +136,7 @@ exports.getAllRating = async (req, res) => {
             });
     }   
     catch(error) {
-        console.log(error);
+        console.error(error);
         return res.status(500).json({
             success:false,
             message:error.message,

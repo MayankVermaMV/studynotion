@@ -1,4 +1,4 @@
-const BASE_URL = "https://localhost:4000/api/v1"
+const BASE_URL = "http://localhost:4000/api/v1"
 
 // AUTH ENDPOINTS
 export const endpoints = {
@@ -49,6 +49,15 @@ export const ratingsEndpoints = {
   REVIEWS_DETAILS_API: BASE_URL + "/course/getReviews",
 }
 
+// REVIEWS API
+export const reviewEndpoints = {
+  UPSERT_REVIEW_API: BASE_URL + "/reviews",
+  PUBLIC_REVIEWS_API: BASE_URL + "/reviews/public",
+  COURSE_REVIEWS_API: BASE_URL + "/reviews/course",
+  MY_COURSE_REVIEW_API: BASE_URL + "/reviews/course",
+  DELETE_REVIEW_API: BASE_URL + "/reviews",
+}
+
 // CATAGORIES API
 export const categories = {
   CATEGORIES_API: BASE_URL + "/course/showAllCategories",
@@ -69,4 +78,21 @@ export const settingsEndpoints = {
   UPDATE_PROFILE_API: BASE_URL + "/profile/updateProfile",
   CHANGE_PASSWORD_API: BASE_URL + "/auth/changepassword",
   DELETE_PROFILE_API: BASE_URL + "/profile/deleteProfile",
+}
+
+// SEARCH API
+export const searchEndpoints = {
+  SEARCH_COURSES_API: BASE_URL + "/search/courses",
+}
+
+// NOTIFICATION API
+export const notificationEndpoints = {
+  GET_NOTIFICATIONS_API: BASE_URL + "/notifications",
+  GET_UNREAD_COUNT_API: BASE_URL + "/notifications/unread-count",
+  MARK_ALL_READ_API: BASE_URL + "/notifications/read-all",
+  MARK_READ_API: BASE_URL + "/notifications",
+  DELETE_NOTIFICATION_API: BASE_URL + "/notifications",
+  GET_NOTIFICATION_PREFERENCES_API: BASE_URL + "/notifications/preferences/me",
+  UPDATE_NOTIFICATION_PREFERENCES_API:
+    BASE_URL + "/notifications/preferences/me",
 }

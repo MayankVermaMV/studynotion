@@ -2,13 +2,14 @@ import { useEffect, useState } from "react"
 import { AiOutlineMenu, AiOutlineShoppingCart } from "react-icons/ai"
 import { BsChevronDown } from "react-icons/bs"
 import { useSelector } from "react-redux"
-import { Link, matchPath, useLocation } from "react-router-dom"
+import { Link, matchPath, useLocation, useNavigate } from "react-router-dom"
 
 import logo from "../../assets/Logo/Logo-Full-Light.png"
 import { NavbarLinks } from "../../data/navbar-links"
 import { apiConnector } from "../../services/apiconnector"
 import { categories } from "../../services/apis"
 import { ACCOUNT_TYPE } from "../../utils/constants"
+import NotificationBell from "./NotificationBell"
 import ProfileDropdown from "../core/Auth/ProfileDropDown"
 
 function Navbar() {
@@ -16,9 +17,11 @@ function Navbar() {
   const { user } = useSelector((state) => state.profile)
   const { totalItems } = useSelector((state) => state.cart)
   const location = useLocation()
+  const navigate = useNavigate()
 
   const [subLinks, setSubLinks] = useState([])
   const [loading, setLoading] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
 
   useEffect(() => {
     ;(async () => {
@@ -27,7 +30,6 @@ function Navbar() {
         const res = await apiConnector("GET", categories.CATEGORIES_API)
         setSubLinks(res.data.data)
       } catch (error) {
-        console.log("Could not fetch Categories.", error)
       }
       setLoading(false)
     })()
@@ -37,6 +39,13 @@ function Navbar() {
 
   const matchRoute = (route) => {
     return matchPath({ path: route }, location.pathname)
+  }
+
+  const handleSearchSubmit = (event) => {
+    event.preventDefault()
+    const query = searchQuery.trim()
+    if (!query) return
+    navigate(`/search?q=${encodeURIComponent(query)}`)
   }
 
   return (
@@ -114,6 +123,15 @@ function Navbar() {
         </nav>
         {/* Login / Signup / Dashboard */}
         <div className="hidden items-center gap-x-4 md:flex">
+          <form onSubmit={handleSearchSubmit} className="hidden lg:block">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Search courses..."
+              className="w-[200px] rounded-md border border-richblack-700 bg-richblack-800 px-3 py-2 text-sm text-richblack-5 placeholder:text-richblack-400"
+            />
+          </form>
           {user && user?.accountType !== ACCOUNT_TYPE.INSTRUCTOR && (
             <Link to="/dashboard/cart" className="relative">
               <AiOutlineShoppingCart className="text-2xl text-richblack-100" />
@@ -138,6 +156,7 @@ function Navbar() {
               </button>
             </Link>
           )}
+          {token !== null && <NotificationBell />}
           {token !== null && <ProfileDropdown />}
         </div>
         <button className="mr-4 md:hidden">

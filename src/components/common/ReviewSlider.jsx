@@ -13,9 +13,7 @@ import { FaStar } from "react-icons/fa"
 // Import required modules
 import { Autoplay, FreeMode, Pagination } from "swiper"
 
-// Get apiFunction and the endpoint
-import { apiConnector } from "../../services/apiconnector"
-import { ratingsEndpoints } from "../../services/apis"
+import { fetchPublicReviews } from "../../services/operations/reviewAPI"
 
 function ReviewSlider() {
   const [reviews, setReviews] = useState([])
@@ -23,13 +21,8 @@ function ReviewSlider() {
 
   useEffect(() => {
     ;(async () => {
-      const { data } = await apiConnector(
-        "GET",
-        ratingsEndpoints.REVIEWS_DETAILS_API
-      )
-      if (data?.success) {
-        setReviews(data?.data)
-      }
+      const publicReviews = await fetchPublicReviews({ limit: 40, page: 1 })
+      setReviews(publicReviews)
     })()
   }, [])
 

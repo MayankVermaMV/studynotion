@@ -6,6 +6,7 @@ const otpGenerator = require("otp-generator")
 const mailSender = require("../utils/mailSender")
 const { passwordUpdated } = require("../mail/templates/passwordUpdate")
 const Profile = require("../models/Profile")
+const { createNotification } = require("../features/notifications/notification.service")
 require("dotenv").config()
 
 // Signup Controller for Registering USers
@@ -57,7 +58,6 @@ exports.signup = async (req, res) => {
 
     // Find the most recent OTP for the email
     const response = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1)
-    console.log(response)
     if (response.length === 0) {
       // OTP not found for the email
       return res.status(400).json({
@@ -76,8 +76,7 @@ exports.signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10)
 
     // Create the user
-    let approved = ""
-    approved === "Instructor" ? (approved = false) : (approved = true)
+    const approved = accountType === "Instructor" ? false : true
 
     // Create the Additional Profile For User
     const profileDetails = await Profile.create({
@@ -96,6 +95,16 @@ exports.signup = async (req, res) => {
       approved: approved,
       additionalDetails: profileDetails._id,
       image: "",
+    })
+
+    await createNotification({
+      userId: user._id,
+      type: "SYSTEM",
+      title: "Welcome to StudyNotion",
+      message: "Your account has been created successfully.",
+      metadata: {
+        accountType: user.accountType,
+      },
     })
 
     return res.status(200).json({
@@ -142,7 +151,7 @@ exports.login = async (req, res) => {
     // Generate JWT token and Compare Password
     if (await bcrypt.compare(password, user.password)) {
       const token = jwt.sign(
-        { email: user.email, id: user._id, role: user.role },
+        { email: user.email, id: user._id, role: user.accountType },
         process.env.JWT_SECRET,
         {
           expiresIn: "24h",
@@ -202,25 +211,22 @@ exports.sendotp = async (req, res) => {
       lowerCaseAlphabets: false,
       specialChars: false,
     })
-    const result = await OTP.findOne({ otp: otp })
-    console.log("Result is Generate OTP Func")
-    console.log("OTP", otp)
-    console.log("Result", result)
+    let result = await OTP.findOne({ otp: otp })
     while (result) {
       otp = otpGenerator.generate(6, {
         upperCaseAlphabets: false,
+        lowerCaseAlphabets: false,
+        specialChars: false,
       })
+      result = await OTP.findOne({ otp: otp })
     }
     const otpPayload = { email, otp }
     const otpBody = await OTP.create(otpPayload)
-    console.log("OTP Body", otpBody)
     res.status(200).json({
       success: true,
       message: `OTP Sent Successfully`,
-      otp,
     })
   } catch (error) {
-    console.log(error.message)
     return res.status(500).json({ success: false, error: error.message })
   }
 }
@@ -264,7 +270,6 @@ exports.changePassword = async (req, res) => {
           `Password updated successfully for ${updatedUserDetails.firstName} ${updatedUserDetails.lastName}`
         )
       )
-      console.log("Email sent successfully:", emailResponse.response)
     } catch (error) {
       // If there's an error sending the email, log the error and return a 500 (Internal Server Error) error
       console.error("Error occurred while sending email:", error)

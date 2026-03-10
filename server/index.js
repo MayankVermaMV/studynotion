@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 
@@ -6,25 +7,43 @@ const profileRoutes = require("./routes/Profile");
 const paymentRoutes = require("./routes/Payments");
 const courseRoutes = require("./routes/Course");
 const contactUsRoute = require("./routes/Contact");
+const testEmailRoute = require("./routes/TestEmail");
+const reviewRoutes = require("./features/reviews/review.routes");
+const searchRoutes = require("./features/search/search.routes");
+const notificationRoutes = require("./features/notifications/notification.routes");
 const database = require("./config/database");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const {cloudinaryConnect } = require("./config/cloudinary");
+const { validateMailConfiguration } = require("./utils/mailSender");
+const {
+	cloudinaryConnect,
+	validateCloudinaryConfiguration,
+} = require("./config/cloudinary");
+const { validateRazorpayConfiguration } = require("./config/razorpay");
 const fileUpload = require("express-fileupload");
-const dotenv = require("dotenv");
-
-dotenv.config();
 const PORT = process.env.PORT || 4000;
 
+validateMailConfiguration();
+validateCloudinaryConfiguration();
+validateRazorpayConfiguration();
+
 //database connect
-database.connect();
+database.connect()
+	.then(() => {
+		app.listen(PORT, () => {
+			console.log(`App is running at ${PORT}`)
+		})
+	})
+	.catch(() => {
+		process.exit(1)
+	});
 //middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(
 	cors({
-		origin:"http://localhost:3000",
-		credentials:true,
+		origin: process.env.CORS_ORIGIN,
+		credentials: true,
 	})
 )
 
@@ -43,6 +62,10 @@ app.use("/api/v1/profile", profileRoutes);
 app.use("/api/v1/course", courseRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/reach", contactUsRoute);
+app.use("/api/v1/reviews", reviewRoutes);
+app.use("/api/v1/search", searchRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
+app.use("/api/v1/test-email", testEmailRoute);
 
 //def route
 
@@ -53,7 +76,4 @@ app.get("/", (req, res) => {
 	});
 });
 
-app.listen(PORT, () => {
-	console.log(`App is running at ${PORT}`)
-})
 

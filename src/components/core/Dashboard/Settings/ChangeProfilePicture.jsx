@@ -39,7 +39,6 @@ export default function ChangeProfilePicture() {
 
   const handleFileUpload = () => {
     try {
-      console.log("uploading...")
       setLoading(true)
       const formData = new FormData()
       formData.append("displayPicture", imageFile)
@@ -48,7 +47,6 @@ export default function ChangeProfilePicture() {
         setLoading(false)
       })
     } catch (error) {
-      console.log("ERROR MESSAGE - ", error.message)
     }
   }
 

@@ -24,6 +24,17 @@ const coursesSchema = new mongoose.Schema({
 			ref: "RatingAndReview",
 		},
 	],
+	averageRating: {
+		type: Number,
+		default: 0,
+		min: 0,
+		max: 5,
+	},
+	totalRatings: {
+		type: Number,
+		default: 0,
+		min: 0,
+	},
 	price: {
 		type: Number,
 	},
@@ -58,6 +69,9 @@ const coursesSchema = new mongoose.Schema({
 		default:Date.now
 	},
 });
+
+coursesSchema.index({ status: 1, category: 1, price: 1, averageRating: -1, createdAt: -1 });
+coursesSchema.index({ courseName: "text", courseDescription: "text", tag: "text" });
 
 // Export the Courses model
 module.exports = mongoose.model("Course", coursesSchema);
