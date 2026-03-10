@@ -22,6 +22,33 @@ const {
 const { validateRazorpayConfiguration } = require("./config/razorpay");
 const fileUpload = require("express-fileupload");
 const PORT = process.env.PORT || 4000;
+const DEFAULT_CORS_ORIGINS = ["http://localhost:3000"];
+
+const getAllowedOrigins = () => {
+	const parsedOrigins = (process.env.CORS_ORIGIN || "")
+		.split(",")
+		.map((origin) => origin.trim().replace(/\/+$/, ""))
+		.filter(Boolean);
+
+	return parsedOrigins.length ? parsedOrigins : DEFAULT_CORS_ORIGINS;
+};
+
+const allowedOrigins = getAllowedOrigins();
+const corsOptions = {
+	origin: (origin, callback) => {
+		if (!origin) {
+			return callback(null, true);
+		}
+
+		const normalizedOrigin = origin.replace(/\/+$/, "");
+		if (allowedOrigins.includes(normalizedOrigin)) {
+			return callback(null, true);
+		}
+
+		return callback(new Error("Not allowed by CORS"));
+	},
+	credentials: true,
+};
 
 validateMailConfiguration();
 validateCloudinaryConfiguration();
@@ -40,12 +67,7 @@ database.connect()
 //middlewares
 app.use(express.json());
 app.use(cookieParser());
-app.use(
-	cors({
-		origin: process.env.CORS_ORIGIN,
-		credentials: true,
-	})
-)
+app.use(cors(corsOptions));
 
 app.use(
 	fileUpload({

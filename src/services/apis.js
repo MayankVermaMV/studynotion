@@ -1,4 +1,18 @@
-const BASE_URL = "http://localhost:4000/api/v1"
+const API_PREFIX = "/api/v1"
+
+const normalizeBaseUrl = (baseUrl) => {
+  const trimmedBaseUrl = (baseUrl || "").trim().replace(/\/+$/, "")
+
+  if (!trimmedBaseUrl) {
+    return "http://localhost:4000/api/v1"
+  }
+
+  return trimmedBaseUrl.endsWith(API_PREFIX)
+    ? trimmedBaseUrl
+    : `${trimmedBaseUrl}${API_PREFIX}`
+}
+
+const BASE_URL = normalizeBaseUrl(process.env.REACT_APP_BASE_URL)
 
 // AUTH ENDPOINTS
 export const endpoints = {

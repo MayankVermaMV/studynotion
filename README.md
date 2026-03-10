@@ -100,13 +100,13 @@ Expected local ports:
 | `MAIL_PASS` | Yes | `your_gmail_app_password` |
 | `MAIL_TEST_TO` | Optional | `your_test_recipient@gmail.com` |
 | `FRONTEND_URL` | Yes | `http://localhost:3000` |
-| `CORS_ORIGIN` | Yes | `http://localhost:3000` |
+| `CORS_ORIGIN` | Yes | `http://localhost:3000,https://your-frontend.vercel.app` |
 
 ### Frontend (`.env`)
 
 | Variable | Required | Example |
 |---|---|---|
-| `REACT_APP_BASE_URL` | Yes | `http://localhost:4000/api/v1` |
+| `REACT_APP_BASE_URL` | Yes | `https://your-backend.onrender.com` |
 | `REACT_APP_RAZORPAY_KEY` | Yes | `rzp_test_xxxxx` |
 
 ## Backend API Mounts
@@ -129,7 +129,7 @@ Expected local ports:
 4. Build Command: `npm install`
 5. Start Command: `npm start`
 6. Add all backend environment variables from `server/.env.example`.
-7. Set `CORS_ORIGIN` to your Vercel frontend URL.
+7. Set `CORS_ORIGIN` as a comma-separated list (for example: `http://localhost:3000,https://your-frontend.vercel.app`).
 8. Deploy and verify `https://your-backend.onrender.com/` responds.
 
 ### Frontend on Vercel
@@ -139,7 +139,7 @@ Expected local ports:
 3. Build Command: `npm run build`
 4. Output Directory: `build`
 5. Add frontend env vars:
-   - `REACT_APP_BASE_URL=https://your-backend.onrender.com/api/v1`
+   - `REACT_APP_BASE_URL=https://your-backend.onrender.com`
    - `REACT_APP_RAZORPAY_KEY=rzp_live_or_test_key`
 6. Deploy and verify the app loads.
 
